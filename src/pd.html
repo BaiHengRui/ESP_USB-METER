@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UART_PD 控制面板</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --background: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui;
+            margin: 0;
+            padding: 20px;
+            background: var(--background);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1a237e;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .mode-section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .voltage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .pd-mode {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+        }
+
+        .fixed-voltage {
+            background: var(--success);
+            color: white;
+        }
+
+        .pps-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .current-set {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .off-button {
+            background: var(--danger);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>UART PD 电源控制面板</h1>
+        
+        <div class="mode-section">
+            <button class="pd-mode" onclick="sendCommand('DEV_PD_POWER_SET')">进入PD模式</button>
+        </div>
+
+        <div class="mode-section">
+            <h3>固定电压档位</h3>
+            <div class="voltage-grid">
+                <button class="fixed-voltage" onclick="sendCommand('FIX5V')">5V</button>
+                <button class="fixed-voltage" onclick="sendCommand('FIX9V')">9V</button>
+                <button class="fixed-voltage" onclick="sendCommand('FIX12V')">12V</button>
+                <button class="fixed-voltage" onclick="sendCommand('FIX15V')">15V</button>
+                <button class="fixed-voltage" onclick="sendCommand('FIX20VV')">20V</button>
+            </div>
+        </div>
+
+        <div class="pps-section">
+            <h3>PPS调压档</h3>
+            <div class="current-set">
+                <input type="number" id="voltage" placeholder="电压 (V)" min="0" step="0.1">
+                <input type="number" id="current" placeholder="电流 (A)" min="0" step="0.1">
+                <button onclick="setPPS()">设置</button>
+            </div>
+        </div>
+
+        <button class="off-button" onclick="sendCommand('OFF_PD')">关闭PD</button>
+    </div>
+
+    <script>
+        function sendCommand(cmd) {
+            console.log("发送指令:", cmd);
+            // 这里可以添加实际的串口通信逻辑
+            alert(`已发送指令: ${cmd}`);
+        }
+
+        function setPPS() {
+            const voltage = document.getElementById('voltage').value;
+            const current = document.getElementById('current').value;
+            if (voltage && current) {
+                const cmd = `PPS${voltage}V${current}A`;
+                sendCommand(cmd);
+            } else {
+                alert("请填写完整的电压和电流值");
+            }
+        }
+    </script>
+</body>
+</html>

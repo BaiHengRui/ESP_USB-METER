@@ -1,0 +1,81 @@
+硬件连接接线引脚
+HardWare Pin - Pin
+
+ESP32 ->
+BOOT:
+    RST
+    GPIO0
+POWER:
+    3V3
+    GND
+SPI:
+    GPIO9
+    GPIO10
+    GPIO11
+    GPIO12
+    GPIO13
+    GPIO14
+I2C:
+    GPIO46/36(Dev Board)
+    GPIO45/35(Dev Board)
+ADC:
+    GPIO0
+    GPIO2
+    GPIO3
+    GPIO4
+    GPIO7
+USB:
+    GPIO18(DP)
+    GPIO19(DN)
+
+LCD ->
+BLK:
+    GPIO9
+DC:
+    GPIO10
+CS:
+    GPIO11
+SCLK:
+    GPIO12
+MOSI:
+    GPIO13
+RST:
+    GPIO14
+
+INA ->
+SCL:
+    GPIO45
+SDA:
+    GPIO46
+
+NTC ->
+ADC:
+    GPIO3
+
+Botton ->
+ADC:
+    GPIO0
+
+Other ->
+ADC_DP:
+    GPIO4
+ADC_DN:
+    GPIO7
+ADC_VBUS:
+    GPIO2
+<-- -->
+
+Warning! 
+GPIO0 is boot pin,must pullup to 3.3v!(low:bootting mode up:statting mode)
+
+Reuse GPIO0 and Button1(Key1 pin), pull Button up 3v3, short circuit GND trigger!
+
+3v3--|10K ohm|---(Button)--GND
+               |
+               |
+               GPIO0(Boot and Key1)
+
+3v3--|10k ohm NTC|--|10k ohm|---NTC_PIN
+                              |
+                              |
+                              GND  
