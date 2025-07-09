@@ -21,7 +21,7 @@
 //版本号
 //Major;Minor;Patch;Language
 #define FirmwareVer "V1.1.33bCN"
-#define HardwareVer "h001"
+#define HardwareVer "HW101"
 
 //IO引脚
 #define I2C_SDA_PIN 46  //I2C PIN 46
