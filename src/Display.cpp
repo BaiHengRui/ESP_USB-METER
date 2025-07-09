@@ -2,7 +2,7 @@
 *File Name:Display.cpp
 显示函数
 
-*Project Name: ESP32S3 USB-METER MINI
+*Project Name: ESP32S3 USB-METER
 *FramWork: Arduino
 *Project Version: /
 *Data: 2025/04/12
@@ -437,26 +437,19 @@ void Display::Sys_Info() {
     float Total_Flash_Size = (Sketch_Size + Free_Flash_Size)/2; // 总闪存大小KB OTA1
     float usageRatio = (Total_Flash_Size > 0) ? (Sketch_Size / Total_Flash_Size) : 0; // 计算使用比例
     uint16_t progressWidth = (usageRatio * 200); // 进度条宽度
-    
-    // 创建显示精灵
+
     spr.createSprite(240, 240);
     spr.fillSprite(TFT_BLACK); // 黑色背景
-    
-    // 设置文本属性
     spr.setTextDatum(CC_DATUM);
     spr.setTextColor(TFT_WHITE);
     spr.loadFont(Font1_12);
-    
-    // ====================
-    // 1. 标题区域 (0-30px)
+
     // ====================
     spr.setTextColor(TFT_CYAN);
     spr.drawFastHLine(0, 0, 240, TFT_DARKGREY); // 顶部装饰线
     spr.drawCentreString("SYSTEM INFORMATION", 120, 15, 2); // 主标题
     
-    // ====================
-    // 2. 设备信息区域 (35-85px)
-    // ====================
+    //设备信息区域
     spr.setTextColor(TFT_YELLOW);
     spr.drawFastHLine(10, 35, 220, TFT_DARKGREY);
     spr.drawString("DEVICE INFO", 120, 45, 2);
@@ -469,9 +462,7 @@ void Display::Sys_Info() {
     spr.setCursor(15, 75);
     spr.printf("Firmware: %s", FirmwareVer);
     
-    // ====================
-    // 3. 系统状态区域 (90-150px)
-    // ====================
+    //系统信息
     spr.setTextColor(TFT_YELLOW);
     spr.drawFastHLine(10, 90, 220, TFT_DARKGREY); // Y=90
     spr.drawString("SYSTEM STATUS", 80, 100, 2); // Y=100 (之前是95)
@@ -496,9 +487,7 @@ void Display::Sys_Info() {
         spr.print("ERROR CODE: " + String(System_Error));
     }
     
-    // ====================
-    // 4. 存储信息区域 (155-210px)
-    // ====================
+    //固件信息区域
     spr.setTextColor(TFT_YELLOW);
     spr.drawFastHLine(10, 155, 220, TFT_DARKGREY); // Y=155
     spr.drawString("STORAGE USAGE", 80, 160, 2); // Y=160
@@ -513,9 +502,7 @@ void Display::Sys_Info() {
     // 进度条前景
     spr.fillRoundRect(15, 190, progressWidth, 12, 3, TFT_GREEN);
     
-    // ====================
-    // 5. 安全信息区域 (215-240px)
-    // ====================
+
     spr.setTextColor(TFT_YELLOW);
     spr.drawFastHLine(10, 215, 220, TFT_DARKGREY);
     
@@ -526,17 +513,10 @@ void Display::Sys_Info() {
     // spr.drawCentreString("MD5: " + md5, 2, 225, 1);
     spr.setCursor(5,225);
     spr.print(md5);
-    
-    // ====================
-    // 6. 底部装饰
-    // ====================
+
+
     spr.drawFastHLine(0, 239, 240, TFT_DARKGREY); // 底部装饰线
-    
-    // 操作提示
-    // spr.setTextColor(TFT_CYAN);
-    // spr.drawCentreString("Press BACK to exit", 120, 210, 1);
-    
-    spr.unloadFont(); // 卸载字体以释放内存
+    spr.unloadFont();
     // 推送显示
     spr.pushSprite(0, 0);
     spr.deleteSprite();
@@ -586,7 +566,7 @@ void Display::Menu() {
             spr.setTextColor(0xFFE0);
         }
         spr.setCursor(5, 105);
-        spr.print("4.OTA");
+        spr.print("4.PD Trigger");
 
         if (Menu_Key == 5) {
             spr.setTextColor(0x3666);
@@ -602,7 +582,7 @@ void Display::Menu() {
             spr.setTextColor(0xFFE0);
         }
         spr.setCursor(5, 155);
-        spr.print("6.NULL");
+        spr.print("6.OTA");
 
         if (Menu_Key == 7) {
             spr.setTextColor(0x3666);

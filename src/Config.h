@@ -2,7 +2,7 @@
 *File Name:Config.h
 存放配置文件
 
-*Project Name: ESP32S3 USB-METER MINI
+*Project Name: ESP32S3 USB-METER
 *FramWork: Arduino
 *Project Version: /
 *Data: 2025/04/12

@@ -2,7 +2,7 @@
 *File Name:Variable.h
 全局变量
 
-*Project Name: ESP32S3 USB-METER MINI
+*Project Name: ESP32S3 USB-METER
 *FramWork: Arduino
 *Project Version: /
 *Data: 2025/04/12

@@ -2,7 +2,7 @@
 *File Name:Function.cpp
 运行函数
 
-*Project Name: ESP32S3 USB-METER MINI
+*Project Name: ESP32S3 USB-METER
 *FramWork: Arduino
 *Project Version: /
 *Data: 2025/04/12
@@ -25,6 +25,11 @@
 #include "Display.h"
 #include "Variable.h"
 #include "OTA_HTML.h"
+
+#define UART_COLOR_RESET "\033[0m"
+#define UART_COLOR_RED "\033[31m"
+#define UART_COLOR_GREEN "\033[32m"
+#define UART_COLOR_YELLOW "\033[33m"
 
 Function FUNC;
 extern Display DISP;
@@ -140,16 +145,24 @@ void Key4LongClick(Button2&btn4){
                 LastApp =6;
                 delay(20);
             }else if (Menu_Key ==4)
+            {   
+                Now_App =10;//PD Trigger
+                LastApp =6;
+                DISP.WiFi_Connect();
+                delay(20);
+
+            }else if (Menu_Key ==5)
+            {
+                Now_App =3;//PDO Log
+                LastApp =6;
+            }else if (Menu_Key ==6)
             {
                 Now_App =9;//OTA
                 LastApp =6;
                 DISP.WiFi_Connect();
                 delay(20);
-            }else if (Menu_Key ==5)
-            {
-                Now_App =3;//PDO Log
-                LastApp =6;
-            } 
+            }
+            
         }
     }
     if (time4 >= time4max)
@@ -173,9 +186,9 @@ void Function::System_Init(){
     // Now_App = EEPROM.read(App_addr);
     Now_App =1;
     // esp_wifi_set_ps(WIFI_PS_MIN_MODEM);  //WiFi电源优化管理
-    Serial.print("\033[32m");//绿色
+    Serial.print(UART_COLOR_GREEN);//绿色
     Serial.println("===== ***ESP32-S3 USB METER*** =====");
-    Serial.print("\033[33m");//黄色
+    Serial.print(UART_COLOR_YELLOW);//黄色
     Serial.println("System Loading...");
     Serial.print("Firmware Version: ");
     Serial.println(FirmwareVer);
@@ -187,9 +200,9 @@ void Function::System_Init(){
     Serial.println(ESP.getSketchMD5());   
     Serial.print("Core Version:");
     Serial.println(ESP.getChipRevision()); 
-    Serial.print("\033[32m");//绿色
+    Serial.print(UART_COLOR_GREEN);//绿色
     Serial.println("======== ***SYSTEM PASS*** ========");
-    Serial.println("\033[0m");//清除
+    Serial.println(UART_COLOR_RESET);//清除
 }
 
 void Function::System_Run(){
@@ -237,12 +250,12 @@ void Function::INA22x_Init(){
     {
         while (!ina.begin())
         {
-            Serial.print("\033[31m");//串口文本红色
+            Serial.print(UART_COLOR_RED);//串口文本红色
             Serial.println("INA22x Init Error!");
             delay(100);
             System_Error ="INA22x Init Error";
             Serial.println("[DEV]Again Init I2C BUS At SDA(36),SCL(35)!");
-            Serial.println("\033[0m");//清除串口文本颜色
+            Serial.println(UART_COLOR_RESET);//清除串口文本颜色
             Wire.end();//结束I2C总线
             delay(100);
             Wire.begin(36,35);
@@ -261,9 +274,9 @@ void Function::IMU_Init(){
     mpu.begin();
     if (!mpu.begin())
     {
-        Serial.print("\033[31m");//串口文本红色
+        Serial.print(UART_COLOR_RED);//串口文本红色
         Serial.println("MPU6050 Init Error!");
-        Serial.println("\033[0m");//清除串口文本颜色
+        Serial.println(UART_COLOR_RESET);//清除串口文本颜色
         DISP.LCD_Light_Update(100,0);
         DISP.MsgWindows("MPU ERROR",TFT_RED,0xfff,160,40);
         return;
