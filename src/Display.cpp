@@ -56,7 +56,6 @@ void Display::LCD_Init(){
     spr.init();
     spr.invertDisplay(InvertDisplay);
     tft.setRotation(LCD_Rotation);
-    spr.setRotation(LCD_Rotation);
     
     int Light_temp = EEPROM.read(LCD_Light_addr);
     int Rotation_temp = EEPROM.read(LCD_Rotation_addr);
@@ -81,6 +80,7 @@ void Display::LCD_Light_Update(int light, bool saved){
     if (saved ==1)
     {
         EEPROM.write(LCD_Light_addr,light);
+        EEPROM.commit();
     }
     
 }

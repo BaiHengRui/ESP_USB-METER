@@ -343,21 +343,21 @@ void Function::FUSB_Init(){
     PD_UFP.set_listen_mode(true); //设置监听模式
     // PD_UFP.init(FUSB_INT_PIN, PD_POWER_OPTION_MAX_12V);
     // PD_UFP.init_PPS(FUSB_INT_PIN, PPS_V(8.6),PPS_A(2.1));
-    // PD_UFP.init_PPS(FUSB_INT_PIN,PPS_V(PD_POWER_OPTION_MAX_VOLTAGE),PPS_A(PD_POWER_OPTION_MAX_CURRENT),PD_POWER_OPTION_MAX_POWER);
-    PD_UFP.Listen_init_PPS(FUSB_INT_PIN, 0, 0);
+    PD_UFP.init_PPS(FUSB_INT_PIN,PPS_V(PD_POWER_OPTION_MAX_VOLTAGE),PPS_A(PD_POWER_OPTION_MAX_CURRENT),PD_POWER_OPTION_MAX_POWER);
+    // PD_UFP.Listen_init_PPS(FUSB_INT_PIN, 0, 0);
     // PD_UFP.set_emarker_info(0x05AC, 0x5678, 0x00); //设置E-Marker信息
     Serial.print("FUSB302 PD Sink Init!");
 }
 
 void Function::FUSB_Run(){
-    // PD_UFP.run();
-    PD_UFP.Listen_run();
+    PD_UFP.run();
+    // PD_UFP.Listen_run();
     static long PDtimeMillis = millis();
     if (millis()-PDtimeMillis >= 1* 200) //200ms
     {
         PDtimeMillis = millis();
         PD_UFP.status_log_readline(buf, sizeof(buf) -1);
-        Serial.printf(buf);
+        // Serial.printf(buf);
     }
     PD_Voltage = PD_UFP.get_voltage();
     PD_Current = PD_UFP.get_current();
@@ -577,6 +577,22 @@ void Function::WebUpdate(){
     Serial.println("mDNS服务启动成功！");
     Serial.print("局域网OTA更新网址: ");
     Serial.println("http://esp32.local");
+    
+    // 添加设备信息端点
+    server.on("/info", HTTP_GET, []() {
+        String ipAddress = WiFi.localIP().toString();
+        String SketchMD5 = ESP.getSketchMD5();
+        // 创建JSON响应
+        String json = "{";
+        json += "\"version\":\"" + String(FirmwareVer) + "\",";
+        json += "\"freeFlash\":" + String(ESP.getFreeSketchSpace() / 1024) + ",";
+        json += "\"SNID\":\"" + String(SNID, HEX) + "\",";
+        json += "\"ipAddress\":\"" + ipAddress + "\",";
+        json += "\"firmwareMD5\":\"" + SketchMD5 + "\"";
+        json += "}";
+
+        server.send(200, "application/json", json);
+    });
     //网页服务
     server.on("/",HTTP_GET,[](){
         server.sendHeader("Connection","close");
@@ -589,10 +605,17 @@ void Function::WebUpdate(){
         ESP.restart();
     },[](){
         HTTPUpload& upload = server.upload();
+        static uint32_t totalUpdateSize = 0; // 静态变量记录已上传的大小
+        static int totalFileSize = 0; // 静态变量记录固件总大小
+        
         if (upload.status == UPLOAD_FILE_START)
         {
+            String fileSizeParam = server.arg("fileSize");
+            if (fileSizeParam != "") {
+                totalFileSize = fileSizeParam.toInt();
+            }
             Serial.printf("文件名称: %s\n", upload.filename.c_str());
-            Serial.printf("当前写入大小(Byte):%u\n",upload.currentSize);
+            Serial.printf("文件大小(Byte):%u\n",totalFileSize);
             Serial.print("开始写入...");
             if (!Update.begin(UPDATE_SIZE_UNKNOWN))
             {
@@ -605,16 +628,13 @@ void Function::WebUpdate(){
             {
                 Update.printError(Serial);
             }
-            static int LastProgress = 0;//上一次进度
-            if (upload.totalSize >0)// 避免除零错误
-            {
-                OTA_Progress = 100 - ((upload.currentSize *100) / upload.totalSize);//计算当前上传进度
-                DISP.OTA_Status();
-                if (OTA_Progress != LastProgress) //更新进度
-                {
-                    LastProgress = OTA_Progress;
-                }
-            } 
+
+            if (upload.totalSize > 0) {
+                totalUpdateSize += upload.currentSize;
+                OTA_Progress = (totalUpdateSize * 100) / totalFileSize;
+                // OTA_Progress = 100 - ((upload.currentSize *100) / upload.totalSize); // 计算当前上传进度
+            }
+            DISP.OTA_Status();
         }else if (upload.status == UPLOAD_FILE_END)
         {
             if (Update.end(true))

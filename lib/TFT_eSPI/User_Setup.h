@@ -7,10 +7,8 @@
 //   If this file is edited correctly then all the library example sketches should
 //   run without the need to make any more changes for a particular hardware setup!
 //   Note that some sketches are designed for a particular TFT pixel width/height
-#define ESP32_DMA
-#define ESP32_S3
+
 #define USE_HSPI_PORT  // 根据你的硬件连接选择
-#define DMA_BUFFER_SIZE 512  // 优化DMA缓冲区大小
 
 // ##################################################################################
 //
@@ -81,10 +79,10 @@
 // #define TFT_WIDTH  170 // ST7789 170 x 320
 // #define TFT_WIDTH  240 // ST7789 240 x 240 and 240 x 320
 #define TFT_WIDTH 240
-#define TFT_HEIGHT 135
+// #define TFT_HEIGHT 135
 // #define TFT_HEIGHT 160
 // #define TFT_HEIGHT 128
-// #define TFT_HEIGHT 240 // ST7789 240 x 240
+#define TFT_HEIGHT 240 // ST7789 240 x 240
 // #define TFT_HEIGHT 320 // ST7789 240 x 320
 // #define TFT_HEIGHT 240 // GC9A01 240 x 240
 

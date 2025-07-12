@@ -54,7 +54,7 @@ class PD_UFP_c
         status_power_t get_ps_status(void) { return status_power; }
 
         uint8_t get_src_cap_count(void) { return protocol.power_data_obj_count; }//New Function:Get source capability count
-        uint8_t get_selected_position(void) { int Position = 1+ (PD_protocol_get_selected_power(&protocol)); return Position;}//Nw Function:Get selected power position 0保留所以加1
+        uint8_t get_selected_position(void) { int Position = 1+ (PD_protocol_get_selected_power(&protocol)); return Position;}//New Function:Get selected power position 0保留所以加1
         uint8_t get_cc_pin(); //New Function:Get CC pin status PD_UFP_c 115Lines
         bool set_PPS(uint16_t PPS_voltage, uint8_t PPS_current);
         void set_power_option(enum PD_power_option_t power_option);
