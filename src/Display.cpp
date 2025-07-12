@@ -93,7 +93,6 @@ void Display::LCD_Refresh_Screen(uint32_t color){
 void Display::LCD_Rotation_Update(int rotation_angle, bool saved){
     LCD_Rotation = rotation_angle;
     tft.setRotation(LCD_Rotation);
-    spr.setRotation(LCD_Rotation);
     if (saved == 1)
     {
         EEPROM.write(LCD_Rotation_addr,LCD_Rotation);
@@ -245,7 +244,7 @@ void Display::Page1(){
 
 void Display::Page2() {
     spr.createSprite(240, 240);
-    spr.fillSprite(TFT_BLACK);
+    spr.fillSprite(0x0000);
     spr.setTextDatum(CC_DATUM);
     spr.setColorDepth(8);
 
@@ -310,6 +309,10 @@ void Display::Page2() {
         return (int)((value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin);
     };
 
+    // 计算每个竖格（div）的值
+    float voltsPerDivision = (voltageMax - voltageMin) / 3.0f;
+    float ampsPerDivision = (currentMax - currentMin) / 3.0f;
+
     // 绘制区域参数
     const int graphX = 40;      // 左侧留空40px
     const int graphY = 40;      // 顶部留空40px
@@ -348,28 +351,33 @@ void Display::Page2() {
         spr.drawLine(x, graphY, x, graphY + graphHeight, 0x7BCF);
     }
     // 绘制双曲线
+    // 曲线绘制方向（从右向左）
     for (int i = 1; i < VNUM_POINTS; i++) {
+        int reversedIdx1 = VNUM_POINTS - 1 - (i - 1);
+        int reversedIdx2 = VNUM_POINTS - 1 - i;
+
         // 电压曲线（绿色）
-        int x1 = safeMap(i-1, 0, VNUM_POINTS-1, graphX, graphX+graphWidth);
-        int y1 = safeMap(VoltageData[i-1], voltageMin, voltageMax, graphY+graphHeight, graphY);
-        int x2 = safeMap(i, 0, VNUM_POINTS-1, graphX, graphX+graphWidth);
-        int y2 = safeMap(VoltageData[i], voltageMin, voltageMax, graphY+graphHeight, graphY);
+        int x1 = safeMap(reversedIdx1, 0, VNUM_POINTS - 1, graphX, graphX + graphWidth);
+        int y1 = safeMap(VoltageData[i - 1], voltageMin, voltageMax, graphY + graphHeight, graphY);
+        int x2 = safeMap(reversedIdx2, 0, VNUM_POINTS - 1, graphX, graphX + graphWidth);
+        int y2 = safeMap(VoltageData[i], voltageMin, voltageMax, graphY + graphHeight, graphY);
         spr.drawLine(x1, y1, x2, y2, TFT_GREEN);
 
         // 电流曲线（黄色）
-        int cy1 = safeMap(CurrentData[i-1], currentMin, currentMax, graphY+graphHeight, graphY);
-        int cy2 = safeMap(CurrentData[i], currentMin, currentMax, graphY+graphHeight, graphY);
+        int cy1 = safeMap(CurrentData[i - 1], currentMin, currentMax, graphY + graphHeight, graphY);
+        int cy2 = safeMap(CurrentData[i], currentMin, currentMax, graphY + graphHeight, graphY);
         spr.drawLine(x1, cy1, x2, cy2, TFT_YELLOW);
     }
-
-    // 量程指示（顶部显示）
+    //实时电压电流
     spr.setTextColor(TFT_GREEN);
     spr.setTextDatum(TL_DATUM); // 左对齐
     spr.drawString("V:" + String(LoadVoltage_V,4), 30, 2);
+    spr.drawString(String(voltsPerDivision/10, 2) + String("V/d"), 30, 20);
 
     spr.setTextColor(TFT_YELLOW);
     spr.setTextDatum(TR_DATUM); // 右对齐
     spr.drawString("A:" + String(LoadCurrent_A,4), 210, 2); 
+    spr.drawString(String(ampsPerDivision/10, 2) + String("A/d"), 210, 20);
 
     spr.unloadFont();
     spr.pushSprite(0, 0);
