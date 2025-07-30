@@ -17,6 +17,7 @@
 
 *Explanations:
     修改了MPU6050_tockn库(../lib/MPU6050_tockn/src/MPU6060_tockn.cpp/h)
+    修复了菜单按键判定可以为负数从而不知道选了什么
 */
 
 #include "Function.h"
@@ -111,7 +112,7 @@ void Key3LongClick(Button2&btn3){
     
     if (time3 <= 300)
     {
-        if (Now_App ==6)
+        if (Now_App !=6)
         {
             Now_App = LastApp;
         }
@@ -168,6 +169,7 @@ void Key4LongClick(Button2&btn4){
     if (time4 >= time4max)
     {
         Now_App =1;
+        Menu_Key = 0;
     }
 
 }
@@ -215,6 +217,16 @@ void Function::System_Run(){
     button2.loop();
     button3.loop();
     button4.loop();
+    if (Menu_Key < 0)
+    {
+        Menu_Key = 12;
+    }
+    if (Menu_Key > 12)
+    {
+        Menu_Key = 0;
+    }
+    
+    
     // DISP.MsgUpdate();
 }
 

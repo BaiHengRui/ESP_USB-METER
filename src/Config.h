@@ -20,7 +20,7 @@
 
 //版本号
 //Major;Minor;Patch;Language
-#define FirmwareVer "V1.1.33bCN"
+#define FirmwareVer "V1.1.35CN"
 #define HardwareVer "HW101"
 
 //IO引脚
