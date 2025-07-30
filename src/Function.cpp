@@ -17,6 +17,8 @@
 
 *Explanations:
     修改了MPU6050_tockn库(../lib/MPU6050_tockn/src/MPU6060_tockn.cpp/h)
+    非完美修复屏幕开机花屏
+    修复屏幕方向旋转错位
     修复了菜单按键判定可以为负数从而不知道选了什么
 */
 
