@@ -70,7 +70,7 @@ void sensorTask(void *pvParameters) {
         FUNC.NTCTemperature_Run();
         FUNC.GetChargeProtocol();
         FUNC.UART_Debug(); 
-        FUNC.FUSB_Run();
+        // FUNC.FUSB_Run();
         FUNC.System_Run();
         vTaskDelay(pdMS_TO_TICKS(1)); // 1ms延迟
     }
@@ -116,7 +116,7 @@ void setup() {
   DISP.LCD_Light_Update(EEPROM.read(LCD_Light_addr), 0);
   // Now_App =3;
 
-  FUNC.FUSB_Init(); // 初始化FUSB302
+  // FUNC.FUSB_Init(); // 初始化FUSB302
   // 设置RTC任务
   xTaskCreatePinnedToCore(
       RTC_Time,
